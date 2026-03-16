@@ -62,7 +62,7 @@ async function apiFetch<T>(path: string, params?: Record<string, string | undefi
       "Content-Type": "application/json",
       "Authorization": `Bearer ${API_TOKEN}`,
       "x-api-key": API_TOKEN,
-      "Origin": process.env.NEXT_PUBLIC_SITE_URL || "https://guide.zoddev.site",
+      "Origin": process.env.NEXT_PUBLIC_SITE_URL || "https://z-guide.zoddev.site",
     },
     next: { revalidate: 300 },
   });
