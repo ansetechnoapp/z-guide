@@ -87,7 +87,10 @@ export async function getSpaces(): Promise<DocSpace[]> {
 }
 
 export async function getSpacePages(spaceSlug: string): Promise<DocPage[]> {
-  return apiFetch<DocPage[]>(`spaces/${encodeURIComponent(spaceSlug)}/pages`);
+  const data = await apiFetch<{ space: DocSpace; pages: DocPage[] } | DocPage[]>(
+    `spaces/${encodeURIComponent(spaceSlug)}/pages`
+  );
+  return Array.isArray(data) ? data : data.pages;
 }
 
 export async function getPage(slug: string): Promise<DocPage> {
