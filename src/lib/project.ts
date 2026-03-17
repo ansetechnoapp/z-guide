@@ -1,5 +1,3 @@
-import { headers } from 'next/headers';
-
 const API_URL = process.env.DOCS_API_URL || 'https://api.zoddev.site/api/docs/v1/public';
 
 export interface ProjectInfo {
@@ -9,9 +7,8 @@ export interface ProjectInfo {
   description: string | null;
 }
 
-export async function getProjectSlug(): Promise<string> {
-  const h = await headers();
-  return h.get('x-project-slug') || 'zodback-platform';
+export function getProjectSlug(): string {
+  return process.env.DOCS_PROJECT_SLUG || 'zodback-platform';
 }
 
 export async function resolveProject(slug: string): Promise<ProjectInfo> {

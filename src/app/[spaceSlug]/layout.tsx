@@ -12,7 +12,7 @@ export default async function SpaceLayout({
   params: Promise<{ spaceSlug: string }>;
 }) {
   const { spaceSlug } = await params;
-  const slug = await getProjectSlug();
+  const slug = getProjectSlug();
   const project = await resolveProject(slug);
   const [spaces, pages] = await Promise.all([
     getSpaces(project.id),

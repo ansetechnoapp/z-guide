@@ -12,7 +12,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { pageSlug } = await params;
-  const slug = await getProjectSlug();
+  const slug = getProjectSlug();
   const project = await resolveProject(slug);
   const page = await getPage(pageSlug, project.id);
   return {
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DocPageRoute({ params }: Props) {
   const { spaceSlug, pageSlug } = await params;
-  const slug = await getProjectSlug();
+  const slug = getProjectSlug();
   const project = await resolveProject(slug);
   const [page, spaces, pages] = await Promise.all([
     getPage(pageSlug, project.id),

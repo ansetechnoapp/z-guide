@@ -4,7 +4,7 @@ import { getProjectSlug, resolveProject } from "@/lib/project";
 import { SearchBar } from "@/components/search-bar";
 
 export default async function HomePage() {
-  const slug = await getProjectSlug();
+  const slug = getProjectSlug();
   const project = await resolveProject(slug);
   const spaces = await getSpaces(project.id);
 

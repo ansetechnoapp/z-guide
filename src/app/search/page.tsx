@@ -18,7 +18,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 export default async function SearchPage({ searchParams }: Props) {
   const { q } = await searchParams;
-  const slug = await getProjectSlug();
+  const slug = getProjectSlug();
   const project = await resolveProject(slug);
   const results = q ? await searchDocs(q, project.id) : [];
 
