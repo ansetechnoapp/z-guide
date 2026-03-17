@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import type { TocItem } from "@/lib/markdown";
 
 interface PageContentProps {
@@ -6,6 +9,29 @@ interface PageContentProps {
 }
 
 export function PageContent({ html, toc }: PageContentProps) {
+  const [activeId, setActiveId] = useState<string>("");
+
+  useEffect(() => {
+    if (toc.length <= 2) return;
+    const headings = toc.map((item) => document.getElementById(item.id)).filter(Boolean) as HTMLElement[];
+    if (headings.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id);
+            break;
+          }
+        }
+      },
+      { rootMargin: "0px 0px -60% 0px", threshold: 0 }
+    );
+
+    headings.forEach((h) => observer.observe(h));
+    return () => observer.disconnect();
+  }, [toc]);
+
   return (
     <div className="flex gap-8">
       {/* Main content */}
@@ -28,7 +54,11 @@ export function PageContent({ html, toc }: PageContentProps) {
                 <li key={item.id} style={{ paddingLeft: `${(item.level - 1) * 12}px` }}>
                   <a
                     href={`#${item.id}`}
-                    className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                    className={`transition-colors ${
+                      activeId === item.id
+                        ? "text-blue-600 dark:text-blue-400 font-medium"
+                        : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                    }`}
                   >
                     {item.text}
                   </a>

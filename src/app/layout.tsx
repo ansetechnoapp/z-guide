@@ -28,7 +28,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100`}>
-        {children}
+        <div className="flex flex-col min-h-screen">
+          {children}
+          <footer className="border-t border-gray-200 dark:border-gray-800 py-6 text-center text-xs text-gray-400">
+            Built with <span className="text-blue-500">ZodBack</span> · {new Date().getFullYear()}
+          </footer>
+        </div>
       </body>
     </html>
   );

@@ -5,6 +5,18 @@ import { SearchBar } from "@/components/search-bar";
 import Link from "next/link";
 import type { Metadata } from "next";
 
+function highlight(text: string, query: string): React.ReactNode {
+  if (!query) return text;
+  const parts = text.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"));
+  return parts.map((part, i) =>
+    part.toLowerCase() === query.toLowerCase() ? (
+      <mark key={i} className="bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200 rounded px-0.5">
+        {part}
+      </mark>
+    ) : part
+  );
+}
+
 interface Props {
   searchParams: Promise<{ q?: string }>;
 }
@@ -60,10 +72,10 @@ export default async function SearchPage({ searchParams }: Props) {
               href={`/${result.spaceSlug}/${result.slug}`}
               className="block p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
             >
-              <p className="font-medium">{result.title}</p>
+              <p className="font-medium">{highlight(result.title, q || "")}</p>
               <p className="text-xs text-gray-400 mt-1">{result.spaceName}</p>
               {result.excerpt && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">{result.excerpt}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">{highlight(result.excerpt, q || "")}</p>
               )}
             </Link>
           ))}

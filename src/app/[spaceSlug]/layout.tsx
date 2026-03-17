@@ -21,7 +21,7 @@ export default async function SpaceLayout({
 
   return (
     <div className="min-h-screen">
-      <Sidebar spaces={spaces} pages={pages} currentSpaceSlug={spaceSlug} />
+      <Sidebar spaces={spaces} pages={pages} currentSpaceSlug={spaceSlug} projectName={project.name} />
 
       <div className="lg:pl-64">
         {/* Top bar */}

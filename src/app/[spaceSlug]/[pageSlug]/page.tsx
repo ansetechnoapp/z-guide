@@ -3,7 +3,7 @@ import { getProjectSlug, resolveProject } from "@/lib/project";
 import { renderMarkdown, extractToc } from "@/lib/markdown";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageContent } from "@/components/page-content";
-import Link from "next/link";
+import { PrevNextNav } from "@/components/prev-next-nav";
 import type { Metadata } from "next";
 
 interface Props {
@@ -53,33 +53,12 @@ export default async function DocPageRoute({ params }: Props) {
 
       <PageContent html={html} toc={toc} />
 
-      {/* Prev / Next navigation */}
-      {(prevPage || nextPage) && (
-        <nav className="flex justify-between mt-12 pt-6 border-t border-gray-200 dark:border-gray-800">
-          {prevPage ? (
-            <Link
-              href={`/${spaceSlug}/${prevPage.slug}`}
-              className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            >
-              <span>&larr;</span>
-              <span>{prevPage.title}</span>
-            </Link>
-          ) : (
-            <div />
-          )}
-          {nextPage ? (
-            <Link
-              href={`/${spaceSlug}/${nextPage.slug}`}
-              className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            >
-              <span>{nextPage.title}</span>
-              <span>&rarr;</span>
-            </Link>
-          ) : (
-            <div />
-          )}
-        </nav>
-      )}
+      <PrevNextNav
+        prevHref={prevPage ? `/${spaceSlug}/${prevPage.slug}` : undefined}
+        prevTitle={prevPage?.title}
+        nextHref={nextPage ? `/${spaceSlug}/${nextPage.slug}` : undefined}
+        nextTitle={nextPage?.title}
+      />
     </div>
   );
 }

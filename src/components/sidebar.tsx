@@ -9,9 +9,10 @@ interface SidebarProps {
   spaces: DocSpace[];
   pages?: DocPage[];
   currentSpaceSlug?: string;
+  projectName?: string;
 }
 
-export function Sidebar({ spaces, pages, currentSpaceSlug }: SidebarProps) {
+export function Sidebar({ spaces, pages, currentSpaceSlug, projectName }: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -48,7 +49,7 @@ export function Sidebar({ spaces, pages, currentSpaceSlug }: SidebarProps) {
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">Z</span>
             </div>
-            <span className="font-semibold text-gray-900 dark:text-white">ZodBack Docs</span>
+            <span className="font-semibold text-gray-900 dark:text-white">{projectName || "Docs"}</span>
           </Link>
 
           {/* Spaces list */}
