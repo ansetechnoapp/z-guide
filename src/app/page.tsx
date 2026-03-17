@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { getSpaces } from "@/lib/api";
+import { getProjectSlug, resolveProject } from "@/lib/project";
 import { SearchBar } from "@/components/search-bar";
 
 export default async function HomePage() {
-  const spaces = await getSpaces();
+  const slug = await getProjectSlug();
+  const project = await resolveProject(slug);
+  const spaces = await getSpaces(project.id);
 
   return (
     <div className="min-h-screen">
@@ -14,7 +17,7 @@ export default async function HomePage() {
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">Z</span>
             </div>
-            <span className="font-semibold text-lg">ZodBack Docs</span>
+            <span className="font-semibold text-lg">{project.name} Docs</span>
           </Link>
           <SearchBar />
         </div>
@@ -24,7 +27,7 @@ export default async function HomePage() {
       <section className="max-w-5xl mx-auto px-6 py-16 text-center">
         <h1 className="text-4xl font-bold mb-4">Documentation</h1>
         <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Explore the ZodBack API documentation. Select a space below to get started.
+          {project.description || `Explore the ${project.name} documentation. Select a space below to get started.`}
         </p>
       </section>
 

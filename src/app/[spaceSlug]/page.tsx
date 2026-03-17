@@ -1,4 +1,5 @@
 import { getSpaces, getSpacePages } from "@/lib/api";
+import { getProjectSlug, resolveProject } from "@/lib/project";
 import { Breadcrumb } from "@/components/breadcrumb";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -9,7 +10,9 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { spaceSlug } = await params;
-  const spaces = await getSpaces();
+  const slug = await getProjectSlug();
+  const project = await resolveProject(slug);
+  const spaces = await getSpaces(project.id);
   const space = spaces.find((s) => s.slug === spaceSlug);
   return {
     title: space?.name || spaceSlug,
@@ -19,7 +22,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SpacePage({ params }: Props) {
   const { spaceSlug } = await params;
-  const [spaces, pages] = await Promise.all([getSpaces(), getSpacePages(spaceSlug)]);
+  const slug = await getProjectSlug();
+  const project = await resolveProject(slug);
+  const [spaces, pages] = await Promise.all([
+    getSpaces(project.id),
+    getSpacePages(spaceSlug, project.id),
+  ]);
   const space = spaces.find((s) => s.slug === spaceSlug);
 
   return (

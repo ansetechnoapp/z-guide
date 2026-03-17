@@ -1,4 +1,5 @@
 import { searchDocs } from "@/lib/api";
+import { getProjectSlug, resolveProject } from "@/lib/project";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SearchBar } from "@/components/search-bar";
 import Link from "next/link";
@@ -17,7 +18,9 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 export default async function SearchPage({ searchParams }: Props) {
   const { q } = await searchParams;
-  const results = q ? await searchDocs(q) : [];
+  const slug = await getProjectSlug();
+  const project = await resolveProject(slug);
+  const results = q ? await searchDocs(q, project.id) : [];
 
   return (
     <div className="min-h-screen">
@@ -27,7 +30,7 @@ export default async function SearchPage({ searchParams }: Props) {
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">Z</span>
             </div>
-            <span className="font-semibold text-lg">ZodBack Docs</span>
+            <span className="font-semibold text-lg">{project.name} Docs</span>
           </Link>
           <SearchBar />
         </div>

@@ -1,4 +1,5 @@
 import { getSpaces, getSpacePages } from "@/lib/api";
+import { getProjectSlug, resolveProject } from "@/lib/project";
 import { Sidebar } from "@/components/sidebar";
 import { SearchBar } from "@/components/search-bar";
 import Link from "next/link";
@@ -11,7 +12,12 @@ export default async function SpaceLayout({
   params: Promise<{ spaceSlug: string }>;
 }) {
   const { spaceSlug } = await params;
-  const [spaces, pages] = await Promise.all([getSpaces(), getSpacePages(spaceSlug)]);
+  const slug = await getProjectSlug();
+  const project = await resolveProject(slug);
+  const [spaces, pages] = await Promise.all([
+    getSpaces(project.id),
+    getSpacePages(spaceSlug, project.id),
+  ]);
 
   return (
     <div className="min-h-screen">

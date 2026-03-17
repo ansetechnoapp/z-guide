@@ -1,4 +1,5 @@
 import { getPage, getSpaces, getSpacePages } from "@/lib/api";
+import { getProjectSlug, resolveProject } from "@/lib/project";
 import { renderMarkdown, extractToc } from "@/lib/markdown";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageContent } from "@/components/page-content";
@@ -11,7 +12,9 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { pageSlug } = await params;
-  const page = await getPage(pageSlug);
+  const slug = await getProjectSlug();
+  const project = await resolveProject(slug);
+  const page = await getPage(pageSlug, project.id);
   return {
     title: page.title,
     description: page.excerpt || `Documentation: ${page.title}`,
@@ -20,10 +23,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DocPageRoute({ params }: Props) {
   const { spaceSlug, pageSlug } = await params;
+  const slug = await getProjectSlug();
+  const project = await resolveProject(slug);
   const [page, spaces, pages] = await Promise.all([
-    getPage(pageSlug),
-    getSpaces(),
-    getSpacePages(spaceSlug),
+    getPage(pageSlug, project.id),
+    getSpaces(project.id),
+    getSpacePages(spaceSlug, project.id),
   ]);
 
   const space = spaces.find((s) => s.slug === spaceSlug);

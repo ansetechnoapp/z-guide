@@ -1,6 +1,5 @@
 const API_URL = process.env.DOCS_API_URL || "https://api.zoddev.site/api/docs/v1/public";
-const API_TOKEN = process.env.DOCS_API_TOKEN || "";
-const PROJECT_ID = process.env.DOCS_PROJECT_ID || "1";
+const MASTER_TOKEN = process.env.DOCS_MASTER_TOKEN || "";
 
 // ── Types ──────────────────────────────────────────────
 
@@ -47,10 +46,13 @@ export interface AllData {
 
 // ── Fetch helper ───────────────────────────────────────
 
-async function apiFetch<T>(path: string, params?: Record<string, string | undefined>): Promise<T> {
+async function apiFetch<T>(
+  path: string,
+  projectId: number,
+  params?: Record<string, string | undefined>
+): Promise<T> {
   const url = new URL(`${API_URL}/${path}`.replace(/\/+$/, ""));
-
-  if (PROJECT_ID) url.searchParams.set("projectId", PROJECT_ID);
+  url.searchParams.set("projectId", String(projectId));
   if (params) {
     for (const [k, v] of Object.entries(params)) {
       if (v !== undefined && v !== "") url.searchParams.set(k, v);
@@ -59,10 +61,8 @@ async function apiFetch<T>(path: string, params?: Record<string, string | undefi
 
   const res = await fetch(url.toString(), {
     headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${API_TOKEN}`,
-      "x-api-key": API_TOKEN,
-      "Origin": process.env.NEXT_PUBLIC_SITE_URL || "https://z-guide.zoddev.site",
+      "Authorization": `Bearer ${MASTER_TOKEN}`,
+      "x-api-key": MASTER_TOKEN,
     },
     next: { revalidate: 300 },
   });
@@ -72,31 +72,35 @@ async function apiFetch<T>(path: string, params?: Record<string, string | undefi
   }
 
   const json = await res.json();
-  // API wraps responses in { success: true, data: ... }
   return (json.data !== undefined ? json.data : json) as T;
 }
 
 // ── Public functions ───────────────────────────────────
 
-export async function getAll(): Promise<AllData> {
-  return apiFetch<AllData>("all");
+export async function getAll(projectId: number): Promise<AllData> {
+  return apiFetch<AllData>("all", projectId);
 }
 
-export async function getSpaces(): Promise<DocSpace[]> {
-  return apiFetch<DocSpace[]>("spaces");
+export async function getSpaces(projectId: number): Promise<DocSpace[]> {
+  return apiFetch<DocSpace[]>("spaces", projectId);
 }
 
-export async function getSpacePages(spaceSlug: string): Promise<DocPage[]> {
+export async function getSpacePages(spaceSlug: string, projectId: number): Promise<DocPage[]> {
   const data = await apiFetch<{ space: DocSpace; pages: DocPage[] } | DocPage[]>(
-    `spaces/${encodeURIComponent(spaceSlug)}/pages`
+    `spaces/${encodeURIComponent(spaceSlug)}/pages`,
+    projectId
   );
   return Array.isArray(data) ? data : data.pages;
 }
 
-export async function getPage(slug: string): Promise<DocPage> {
-  return apiFetch<DocPage>(`pages/${encodeURIComponent(slug)}`);
+export async function getPage(slug: string, projectId: number): Promise<DocPage> {
+  return apiFetch<DocPage>(`pages/${encodeURIComponent(slug)}`, projectId);
 }
 
-export async function searchDocs(query: string, spaceId?: string): Promise<DocSearchResult[]> {
-  return apiFetch<DocSearchResult[]>("search", { q: query, spaceId });
+export async function searchDocs(
+  query: string,
+  projectId: number,
+  spaceId?: string
+): Promise<DocSearchResult[]> {
+  return apiFetch<DocSearchResult[]>("search", projectId, { q: query, spaceId });
 }
