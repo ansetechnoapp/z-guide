@@ -1,5 +1,5 @@
-const API_URL = process.env.DOCS_API_URL || "https://api.zoddev.site/api/docs/v1/public";
-const MASTER_TOKEN = process.env.DOCS_MASTER_TOKEN || "";
+const API_URL = process.env.DOCS_API_URL || "https://api.zodev.live/api/docs/v1/public";
+const MASTER_TOKEN = process.env.DOCS_MASTER_TOKEN || process.env.DOCS_API_TOKEN || "";
 
 // ── Types ──────────────────────────────────────────────
 

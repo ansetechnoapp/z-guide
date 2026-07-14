@@ -1,4 +1,4 @@
-const API_URL = process.env.DOCS_API_URL || 'https://api.zoddev.site/api/docs/v1/public';
+const API_URL = process.env.DOCS_API_URL || 'https://api.zodev.live/api/docs/v1/public';
 
 export interface ProjectInfo {
   id: number;

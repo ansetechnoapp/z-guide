@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const GUIDE_DOMAIN = process.env.NEXT_PUBLIC_GUIDE_DOMAIN || 'guide.zoddev.site';
+const GUIDE_DOMAIN = process.env.NEXT_PUBLIC_GUIDE_DOMAIN || 'guide.zodev.live';
 const DEFAULT_SLUG = 'zodback-platform';
 
 export function middleware(request: NextRequest) {
   const hostname = (request.headers.get('host') || '').split(':')[0];
   let projectSlug = DEFAULT_SLUG;
 
-  if (hostname === 'z-guide.zoddev.site') {
+  if (hostname === 'z-guide.zodev.live') {
     // Legacy domain → platform docs
     projectSlug = DEFAULT_SLUG;
   } else if (hostname.endsWith(`.${GUIDE_DOMAIN}`)) {
