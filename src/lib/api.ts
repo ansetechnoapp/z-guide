@@ -1,5 +1,8 @@
-const API_URL = process.env.DOCS_API_URL || "https://api.zodev.live/api/docs/v1/public";
-const MASTER_TOKEN = process.env.DOCS_MASTER_TOKEN || process.env.DOCS_API_TOKEN || "";
+import { getDocsApiUrl } from "./docs-api-url";
+
+const API_URL = getDocsApiUrl();
+const MASTER_TOKEN =
+  (process.env.DOCS_MASTER_TOKEN || process.env.DOCS_API_TOKEN || "").trim();
 
 // ── Types ──────────────────────────────────────────────
 
@@ -59,11 +62,14 @@ async function apiFetch<T>(
     }
   }
 
+  const headers: Record<string, string> = {};
+  if (MASTER_TOKEN) {
+    headers.Authorization = `Bearer ${MASTER_TOKEN}`;
+    headers["x-api-key"] = MASTER_TOKEN;
+  }
+
   const res = await fetch(url.toString(), {
-    headers: {
-      "Authorization": `Bearer ${MASTER_TOKEN}`,
-      "x-api-key": MASTER_TOKEN,
-    },
+    headers,
     next: { revalidate: 300 },
   });
 
