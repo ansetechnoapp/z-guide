@@ -10,7 +10,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { spaceSlug } = await params;
-  const slug = getProjectSlug();
+  const slug = await getProjectSlug();
   const project = await resolveProject(slug);
   const spaces = await getSpaces(project.id);
   const space = spaces.find((s) => s.slug === spaceSlug);
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SpacePage({ params }: Props) {
   const { spaceSlug } = await params;
-  const slug = getProjectSlug();
+  const slug = await getProjectSlug();
   const project = await resolveProject(slug);
   const [spaces, pages] = await Promise.all([
     getSpaces(project.id),

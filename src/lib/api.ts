@@ -81,6 +81,10 @@ async function apiFetch<T>(
   return (json.data !== undefined ? json.data : json) as T;
 }
 
+function isApiNotFoundError(error: unknown): boolean {
+  return error instanceof Error && error.message.startsWith("API 404:");
+}
+
 // ── Public functions ───────────────────────────────────
 
 export async function getAll(projectId: number): Promise<AllData> {
@@ -88,15 +92,25 @@ export async function getAll(projectId: number): Promise<AllData> {
 }
 
 export async function getSpaces(projectId: number): Promise<DocSpace[]> {
-  return apiFetch<DocSpace[]>("spaces", projectId);
+  try {
+    return await apiFetch<DocSpace[]>("spaces", projectId);
+  } catch (error) {
+    if (isApiNotFoundError(error)) return [];
+    throw error;
+  }
 }
 
 export async function getSpacePages(spaceSlug: string, projectId: number): Promise<DocPage[]> {
-  const data = await apiFetch<{ space: DocSpace; pages: DocPage[] } | DocPage[]>(
-    `spaces/${encodeURIComponent(spaceSlug)}/pages`,
-    projectId
-  );
-  return Array.isArray(data) ? data : data.pages;
+  try {
+    const data = await apiFetch<{ space: DocSpace; pages: DocPage[] } | DocPage[]>(
+      `spaces/${encodeURIComponent(spaceSlug)}/pages`,
+      projectId
+    );
+    return Array.isArray(data) ? data : data.pages;
+  } catch (error) {
+    if (isApiNotFoundError(error)) return [];
+    throw error;
+  }
 }
 
 export async function getPage(slug: string, projectId: number): Promise<DocPage> {
