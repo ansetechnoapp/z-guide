@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSpaces } from "@/lib/api";
+import { getAll } from "@/lib/api";
 import { getDocsBrandName, getProjectSlug, resolveProject } from "@/lib/project";
 import { SearchBar } from "@/components/search-bar";
 
@@ -20,15 +20,51 @@ function Icon({ name }: { name: "rocket" | "nodes" | "book" | "code" | "cloud" |
 export default async function HomePage() {
   const slug = await getProjectSlug();
   const project = await resolveProject(slug);
-  const spaces = await getSpaces(project.id);
-  const hrefFor = (index: number) => spaces[index] ? `/${spaces[index].slug}` : "#";
+  const { spaces, pages } = await getAll(project.id);
+  const hrefFor = (spaceSlug: string, preferredPageSlugs: string[] = []) => {
+    const space = spaces.find((entry) => entry.slug === spaceSlug);
+    if (!space) return "#";
+
+    for (const pageSlug of preferredPageSlugs) {
+      const page = pages.find((entry) => entry.spaceId === space.id && entry.slug === pageSlug);
+      if (page) return `/${space.slug}/${page.slug}`;
+    }
+
+    return `/${space.slug}`;
+  };
   const cards = [
-    ["rocket", "Bien démarrer", "Installation, configuration initiale et premier projet en 5 minutes."],
-    ["nodes", "Concepts fondamentaux", "Comprendre l'architecture, les modèles de données et le cycle de vie."],
-    ["book", "Guides pratiques", "Tutoriels détaillés pas à pas pour les cas d'usage courants."],
-    ["code", "Référence API", "Documentation exhaustive des endpoints REST et GraphQL, avec exemples de requêtes et réponses structurées."],
-    ["cloud", "Déploiement", "Stratégies CI/CD, environnements et gestion de production."],
+    {
+      icon: "rocket",
+      title: "Bien démarrer",
+      description: "Installation, configuration initiale et premier projet en 5 minutes.",
+      href: hrefFor("zodback-modules", ["overview-and-concepts"]),
+    },
+    {
+      icon: "nodes",
+      title: "Concepts fondamentaux",
+      description: "Comprendre l'architecture, les modèles de données et le cycle de vie.",
+      href: hrefFor("zodback-modules", ["authentication-api-tokens", "cors-allowed-origins"]),
+    },
+    {
+      icon: "book",
+      title: "Guides pratiques",
+      description: "Tutoriels détaillés pas à pas pour les cas d'usage courants.",
+      href: hrefFor("guide-deployer-site-externe", ["guide-deploy-introduction", "guide-deploy-configuration"]),
+    },
+    {
+      icon: "code",
+      title: "Référence API",
+      description: "Documentation exhaustive des endpoints REST et GraphQL, avec exemples de requêtes et réponses structurées.",
+      href: hrefFor("api-blog", ["api-blog-introduction", "api-blog-authentication"]),
+    },
+    {
+      icon: "cloud",
+      title: "Déploiement",
+      description: "Stratégies CI/CD, environnements et gestion de production.",
+      href: hrefFor("guide-deployer-site-externe", ["guide-deploy-vercel", "guide-deploy-tests-verification"]),
+    },
   ] as const;
+  const startHref = cards[0].href;
 
   return (
     <div className="site-shell">
@@ -48,12 +84,12 @@ export default async function HomePage() {
           <h1>Construisez, intégrez et déployez avec<br className="desktop-break" /> ZodBack</h1>
           <p>La plateforme d'infrastructure backend la plus rapide. Explorez notre<br className="desktop-break" /> documentation complète pour maîtriser l'API, les SDKs et l'architecture cloud<br className="desktop-break" /> en quelques minutes.</p>
           <SearchBar large />
-          <div className="hero-actions"><Link className="button primary" href={hrefFor(0)}>Commencer <span>→</span></Link><Link className="button secondary" href="#api"><Icon name="brackets" /> Explorer l'API</Link></div>
+          <div className="hero-actions"><Link className="button primary" href={startHref}>Commencer <span>→</span></Link><Link className="button secondary" href="#api"><Icon name="brackets" /> Explorer l'API</Link></div>
         </section>
 
         <section className="quick-grid" id="guides">
-          {cards.map(([icon, title, description], index) => <Link key={title} href={hrefFor(index)} className={`quick-card ${index === 3 ? "api-card" : ""}`}>
-            <span className={`card-icon ${index === 4 ? "green" : ""}`}><Icon name={icon} /></span><h2>{title}</h2><p>{description}</p>{index === 3 && <span className="tags"><i>REST</i><i>GraphQL</i><i>Webhooks</i></span>}
+          {cards.map((card, index) => <Link key={card.title} href={card.href} className={`quick-card ${index === 3 ? "api-card" : ""}`}>
+            <span className={`card-icon ${index === 4 ? "green" : ""}`}><Icon name={card.icon} /></span><h2>{card.title}</h2><p>{card.description}</p>{index === 3 && <span className="tags"><i>REST</i><i>GraphQL</i><i>Webhooks</i></span>}
           </Link>)}
         </section>
 

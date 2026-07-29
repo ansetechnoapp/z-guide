@@ -44,7 +44,7 @@ export function Sidebar({ spaces, pages, currentSpaceSlug, projectName }: Sideba
         <div className="sidebar-inner">
           <Link href="/" className="sidebar-heading" onClick={() => setMobileOpen(false)}>
             <span>Documentation</span>
-            <small>{projectName || "ZodBack Docs"} · v2.4 LTS</small>
+            <small>v2.4 LTS</small>
           </Link>
 
           {/* Spaces list */}
