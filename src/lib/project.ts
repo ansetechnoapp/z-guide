@@ -26,3 +26,7 @@ export async function resolveProject(slug: string): Promise<ProjectInfo> {
   const json = await res.json();
   return (json.data ?? json) as ProjectInfo;
 }
+
+export function getDocsBrandName(projectName: string): string {
+  return projectName.replace(/\s+Platform$/i, "").trim() || projectName;
+}

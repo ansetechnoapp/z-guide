@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import type { ReactNode } from "react";
 import type { DocSpace, DocPage } from "@/lib/api";
 
 interface SidebarProps {
@@ -21,10 +22,10 @@ export function Sidebar({ spaces, pages, currentSpaceSlug, projectName }: Sideba
       {/* Mobile toggle */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
+        className="mobile-menu-button"
         aria-label="Toggle sidebar"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {mobileOpen ? (
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           ) : (
@@ -39,22 +40,15 @@ export function Sidebar({ spaces, pages, currentSpaceSlug, projectName }: Sideba
       )}
 
       {/* Sidebar */}
-      <aside
-        className={`fixed top-0 left-0 z-40 h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 overflow-y-auto transition-transform lg:translate-x-0 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="p-5">
-          <Link href="/" className="flex items-center gap-2 mb-6" onClick={() => setMobileOpen(false)}>
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">Z</span>
-            </div>
-            <span className="font-semibold text-gray-900 dark:text-white">{projectName || "Docs"}</span>
+      <aside className={`docs-sidebar ${mobileOpen ? "is-open" : ""}`}>
+        <div className="sidebar-inner">
+          <Link href="/" className="sidebar-heading" onClick={() => setMobileOpen(false)}>
+            <span>Documentation</span>
+            <small>{projectName || "ZodBack Docs"} · v2.4 LTS</small>
           </Link>
 
           {/* Spaces list */}
-          <nav className="space-y-1">
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Spaces</p>
+          <nav className="space-nav">
             {spaces.map((space) => {
               const isActive = currentSpaceSlug === space.slug;
               return (
@@ -62,13 +56,11 @@ export function Sidebar({ spaces, pages, currentSpaceSlug, projectName }: Sideba
                   key={space.id}
                   href={`/${space.slug}`}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                    isActive
-                      ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 font-medium"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`}
+                  className={`space-link ${isActive ? "is-active" : ""}`}
                 >
-                  <span>{space.icon || "📄"}</span>
+                  <span className="space-icon" aria-hidden="true">
+                    <SpaceIcon slug={space.slug} />
+                  </span>
                   <span>{space.name}</span>
                 </Link>
               );
@@ -77,8 +69,8 @@ export function Sidebar({ spaces, pages, currentSpaceSlug, projectName }: Sideba
 
           {/* Pages in current space */}
           {pages && pages.length > 0 && (
-            <nav className="mt-6 space-y-1">
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Pages</p>
+            <nav className="page-nav">
+              <p className="nav-label">{spaces.find((space) => space.slug === currentSpaceSlug)?.name || spaceLabel(currentSpaceSlug)}</p>
               {pages.map((page) => {
                 const href = `/${currentSpaceSlug}/${page.slug}`;
                 const isActive = pathname === href;
@@ -87,13 +79,10 @@ export function Sidebar({ spaces, pages, currentSpaceSlug, projectName }: Sideba
                     key={page.id}
                     href={href}
                     onClick={() => setMobileOpen(false)}
-                    className={`block px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                      isActive
-                        ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 font-medium"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
+                    className={`page-link ${isActive ? "is-active" : ""}`}
                   >
-                    {page.icon || "·"} {page.title}
+                    <span className="page-marker" aria-hidden="true">{page.icon || "•"}</span>
+                    {page.title}
                   </Link>
                 );
               })}
@@ -102,5 +91,52 @@ export function Sidebar({ spaces, pages, currentSpaceSlug, projectName }: Sideba
         </div>
       </aside>
     </>
+  );
+}
+
+function spaceLabel(slug?: string) {
+  if (!slug) return "Documentation";
+  return slug.replace(/[-_]/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function SpaceIcon({ slug }: { slug: string }) {
+  const icons: Record<string, ReactNode> = {
+    "zodback-modules": (
+      <>
+        <path d="M5 7.5A2.5 2.5 0 0 1 7.5 5H12v14H7.5A2.5 2.5 0 0 0 5 21.5v-14Z" />
+        <path d="M19 7.5A2.5 2.5 0 0 0 16.5 5H12v14h4.5A2.5 2.5 0 0 1 19 21.5v-14Z" />
+      </>
+    ),
+    "api-blog": (
+      <>
+        <path d="m6 18 3.5-1 8-8a2.1 2.1 0 0 0 0-3l-.5-.5a2.1 2.1 0 0 0-3 0l-8 8L5 17l1 1Z" />
+        <path d="M13.5 7.5 16.5 10.5" />
+      </>
+    ),
+    "api-portfolio": (
+      <>
+        <circle cx="9" cy="9" r="3.2" />
+        <path d="M4.8 19a5.5 5.5 0 0 1 8.4 0" />
+        <path d="M16 7h4M18 5v4" />
+      </>
+    ),
+    "guide-deployer-site-externe": (
+      <>
+        <path d="M12 4.5 7 9.2V19h10V9.2L12 4.5Z" />
+        <path d="M9.5 19v-4.5h5V19" />
+        <path d="M12 4.5v4.2" />
+      </>
+    ),
+  };
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      {icons[slug] ?? (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M4 12h16" />
+        </>
+      )}
+    </svg>
   );
 }

@@ -31,26 +31,26 @@ export default async function SpacePage({ params }: Props) {
   const space = spaces.find((s) => s.slug === spaceSlug);
 
   return (
-    <div>
+    <div className="space-index">
       <Breadcrumb items={[{ label: space?.name || spaceSlug }]} />
 
-      <h1 className="text-3xl font-bold mb-2">{space?.name || spaceSlug}</h1>
+      <h1>{space?.name || spaceSlug}</h1>
       {space?.description && (
-        <p className="text-gray-600 dark:text-gray-400 mb-8">{space.description}</p>
+        <p className="space-description">{space.description}</p>
       )}
 
-      <div className="space-y-2">
+      <div className="space-page-list">
         {pages.map((page, i) => (
           <Link
             key={page.id}
             href={`/${spaceSlug}/${page.slug}`}
-            className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
+            className="space-page-card"
           >
-            <span className="text-gray-400 text-sm font-mono w-6 text-right">{i + 1}</span>
+            <span className="space-page-number">{i + 1}</span>
             <div>
-              <p className="font-medium">{page.title}</p>
+              <p className="space-page-title">{page.title}</p>
               {page.excerpt && (
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1">{page.excerpt}</p>
+                <p className="space-page-excerpt">{page.excerpt}</p>
               )}
             </div>
           </Link>
@@ -58,7 +58,7 @@ export default async function SpacePage({ params }: Props) {
       </div>
 
       {pages.length === 0 && (
-        <p className="text-gray-500 py-8">No pages in this space yet.</p>
+        <p className="empty-state">Aucune page dans cet espace pour le moment.</p>
       )}
     </div>
   );

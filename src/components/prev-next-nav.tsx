@@ -28,11 +28,11 @@ export function PrevNextNav({ prevHref, prevTitle, nextHref, nextTitle }: Props)
   if (!prevHref && !nextHref) return null;
 
   return (
-    <nav className="flex justify-between mt-12 pt-6 border-t border-gray-200 dark:border-gray-800">
+    <nav className="prev-next-nav">
       {prevHref ? (
         <Link
           href={prevHref}
-          className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="prev-next-link"
         >
           <span>&larr;</span>
           <span>{prevTitle}</span>
@@ -43,7 +43,7 @@ export function PrevNextNav({ prevHref, prevTitle, nextHref, nextTitle }: Props)
       {nextHref ? (
         <Link
           href={nextHref}
-          className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="prev-next-link next"
         >
           <span>{nextTitle}</span>
           <span>&rarr;</span>
