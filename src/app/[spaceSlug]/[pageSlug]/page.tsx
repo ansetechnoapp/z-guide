@@ -49,7 +49,10 @@ export default async function DocPageRoute({ params }: Props) {
         ]}
       />
 
-      <h1 className="text-3xl font-bold mb-8">{page.title}</h1>
+      <header className="doc-header">
+        <h1>{page.title}</h1>
+        {page.excerpt && <p>{page.excerpt}</p>}
+      </header>
 
       <PageContent html={html} toc={toc} />
 

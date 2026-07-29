@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
   subsets: ["latin"],
 });
 
@@ -26,12 +31,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100`}>
+    <html lang="fr">
+      <body className={`${inter.variable} ${geistSans.variable} ${jetbrainsMono.variable} antialiased`}>
         <div className="flex flex-col min-h-screen">
           {children}
-          <footer className="border-t border-gray-200 dark:border-gray-800 py-6 text-center text-xs text-gray-400">
-            Built with <span className="text-blue-500">ZodBack</span> · {new Date().getFullYear()}
+          <footer className="site-footer">
+            <div><strong>ZodBack Docs</strong><p>© 2024 ZodBack SaaS. Engineered for<br /> performance.</p></div>
+            <div><strong>Resources</strong><p>Privacy Policy</p><p>Terms of Service</p><p>Changelog</p><p>Status</p><p>Support</p></div>
           </footer>
         </div>
       </body>
