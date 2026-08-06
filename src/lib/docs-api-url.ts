@@ -7,12 +7,14 @@ export function getDocsApiUrl(): string {
 
   try {
     const url = new URL(configured);
-    if (LEGACY_DOCS_HOSTS.has(url.hostname)) return DEFAULT_DOCS_API_URL;
+    if (LEGACY_DOCS_HOSTS.has(url.hostname)) {
+      throw new Error(`DOCS_API_URL uses a legacy host: ${url.hostname}`);
+    }
     return url.toString().replace(/\/+$/, "");
   } catch {
     if ([...LEGACY_DOCS_HOSTS].some((host) => configured.includes(host))) {
-      return DEFAULT_DOCS_API_URL;
+      throw new Error("DOCS_API_URL uses a legacy host");
     }
-    return configured.replace(/\/+$/, "");
+    throw new Error("DOCS_API_URL must be an absolute URL");
   }
 }

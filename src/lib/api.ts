@@ -1,8 +1,10 @@
 import { getDocsApiUrl } from "./docs-api-url";
 
 const API_URL = getDocsApiUrl();
-const MASTER_TOKEN =
-  (process.env.DOCS_MASTER_TOKEN || process.env.DOCS_API_TOKEN || "").trim();
+const MASTER_TOKEN = (process.env.DOCS_MASTER_TOKEN || "").trim();
+if (process.env.NODE_ENV === "production" && !MASTER_TOKEN) {
+  throw new Error("DOCS_MASTER_TOKEN is required in production");
+}
 
 // ── Types ──────────────────────────────────────────────
 
@@ -62,11 +64,10 @@ async function apiFetch<T>(
     }
   }
 
-  const headers: Record<string, string> = {};
-  if (MASTER_TOKEN) {
-    headers.Authorization = `Bearer ${MASTER_TOKEN}`;
-    headers["x-api-key"] = MASTER_TOKEN;
-  }
+  const headers: Record<string, string> = {
+    ...(MASTER_TOKEN ? { Authorization: `Bearer ${MASTER_TOKEN}`, "x-api-key": MASTER_TOKEN } : {}),
+    "x-project-id": String(projectId),
+  };
 
   const res = await fetch(url.toString(), {
     headers,
